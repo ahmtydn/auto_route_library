@@ -18,7 +18,7 @@ dependencies:
   auto_route:
     git:
       url: https://github.com/ahmtydn/auto_route_library.git
-      ref: 08d3344e96455ebe58d1f3eee2ef3732738fbb57
+      ref: master
       path: auto_route
 
 
