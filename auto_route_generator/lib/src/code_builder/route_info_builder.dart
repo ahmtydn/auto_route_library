@@ -155,7 +155,12 @@ List<Class> buildRouteInfoAndArgs(RouteConfig r, RouterConfig router, DartEmitte
                         ...[
                           for (final p in equatableParams)
                             if (p.type.isList)
-                              refer('ListEquality', _collectionsImport)
+                              TypeReference((b) => b
+                                    ..symbol = 'ListEquality'
+                                    ..url = _collectionsImport
+                                    ..types.add(p.type.typeArguments.isNotEmpty
+                                        ? p.type.typeArguments.first.refer
+                                        : refer('dynamic')))
                                   .constInstance([])
                                   .property('equals')
                                   .call([
@@ -164,7 +169,12 @@ List<Class> buildRouteInfoAndArgs(RouteConfig r, RouterConfig router, DartEmitte
                                   ])
                                   .code
                             else if (p.type.isSet)
-                              refer('SetEquality', _collectionsImport)
+                              TypeReference((b) => b
+                                    ..symbol = 'SetEquality'
+                                    ..url = _collectionsImport
+                                    ..types.add(p.type.typeArguments.isNotEmpty
+                                        ? p.type.typeArguments.first.refer
+                                        : refer('dynamic')))
                                   .constInstance([])
                                   .property('equals')
                                   .call([
@@ -173,7 +183,19 @@ List<Class> buildRouteInfoAndArgs(RouteConfig r, RouterConfig router, DartEmitte
                                   ])
                                   .code
                             else if (p.type.isMap)
-                              refer('MapEquality', _collectionsImport)
+                              TypeReference((b) => b
+                                    ..symbol = 'MapEquality'
+                                    ..url = _collectionsImport
+                                    ..types.addAll([
+                                      if (p.type.typeArguments.isNotEmpty)
+                                        p.type.typeArguments[0].refer
+                                      else
+                                        refer('dynamic'),
+                                      if (p.type.typeArguments.length > 1)
+                                        p.type.typeArguments[1].refer
+                                      else
+                                        refer('dynamic'),
+                                    ]))
                                   .constInstance([])
                                   .property('equals')
                                   .call([
@@ -182,7 +204,12 @@ List<Class> buildRouteInfoAndArgs(RouteConfig r, RouterConfig router, DartEmitte
                                   ])
                                   .code
                             else if (p.type.isIterable)
-                              refer('IterableEquality', _collectionsImport)
+                              TypeReference((b) => b
+                                    ..symbol = 'IterableEquality'
+                                    ..url = _collectionsImport
+                                    ..types.add(p.type.typeArguments.isNotEmpty
+                                        ? p.type.typeArguments.first.refer
+                                        : refer('dynamic')))
                                   .constInstance([])
                                   .property('equals')
                                   .call([
@@ -209,29 +236,34 @@ List<Class> buildRouteInfoAndArgs(RouteConfig r, RouterConfig router, DartEmitte
                     (b) => b.statements.addAll([
                       for (final p in equatableParams)
                         if (p.type.isList)
-                          refer('ListEquality', _collectionsImport)
-                              .constInstance([])
-                              .property('hash')
-                              .call([refer(p.name)])
-                              .code
+                          TypeReference((b) => b
+                            ..symbol = 'ListEquality'
+                            ..url = _collectionsImport
+                            ..types.add(p.type.typeArguments.isNotEmpty
+                                ? p.type.typeArguments.first.refer
+                                : refer('dynamic'))).constInstance([]).property('hash').call([refer(p.name)]).code
                         else if (p.type.isSet)
-                          refer('SetEquality', _collectionsImport)
-                              .constInstance([])
-                              .property('hash')
-                              .call([refer(p.name)])
-                              .code
+                          TypeReference((b) => b
+                            ..symbol = 'SetEquality'
+                            ..url = _collectionsImport
+                            ..types.add(p.type.typeArguments.isNotEmpty
+                                ? p.type.typeArguments.first.refer
+                                : refer('dynamic'))).constInstance([]).property('hash').call([refer(p.name)]).code
                         else if (p.type.isMap)
-                          refer('MapEquality', _collectionsImport)
-                              .constInstance([])
-                              .property('hash')
-                              .call([refer(p.name)])
-                              .code
+                          TypeReference((b) => b
+                            ..symbol = 'MapEquality'
+                            ..url = _collectionsImport
+                            ..types.addAll([
+                              if (p.type.typeArguments.isNotEmpty) p.type.typeArguments[0].refer else refer('dynamic'),
+                              if (p.type.typeArguments.length > 1) p.type.typeArguments[1].refer else refer('dynamic'),
+                            ])).constInstance([]).property('hash').call([refer(p.name)]).code
                         else if (p.type.isIterable)
-                          refer('IterableEquality', _collectionsImport)
-                              .constInstance([])
-                              .property('hash')
-                              .call([refer(p.name)])
-                              .code
+                          TypeReference((b) => b
+                            ..symbol = 'IterableEquality'
+                            ..url = _collectionsImport
+                            ..types.add(p.type.typeArguments.isNotEmpty
+                                ? p.type.typeArguments.first.refer
+                                : refer('dynamic'))).constInstance([]).property('hash').call([refer(p.name)]).code
                         else
                           Code('${p.name}.hashCode')
                     ].insertBetween(
